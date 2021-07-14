@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import "./styles/index.css";
 import App from "./components/App";
 import reportWebVitals from "./reportWebVitals";
+import { setContext } from "@apollo/client/link/context";
 
 // 1
 import { ApolloProvider, ApolloClient, createHttpLink, InMemoryCache } from "@apollo/client";
@@ -12,9 +13,19 @@ const httpLink = createHttpLink({
   uri: "http://localhost:4000",
 });
 
+const authLink = setContext((_, { headers }) => {
+  return {
+    headers: {
+      ...headers,
+      authorization:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImlhdCI6MTYyNjI4MzAyNH0.VC3KOTAeXusdrSFZnqHQ0zzpZt-iMth9iOmQzCnV2KE",
+    },
+  };
+});
+
 // 3
 const client = new ApolloClient({
-  link: httpLink,
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 
